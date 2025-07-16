@@ -6,6 +6,7 @@ import com.gelse.forohub.domain.topico.Topico;
 import java.time.LocalDateTime;
 
 public class Respuesta {
+
     private Long id;
     private String mensaje;
 
