@@ -1,6 +1,6 @@
 package com.gelse.forohub.domain.topico;
 
-import com.gelse.forohub.domain.autor.DatosAutor;
+import com.gelse.forohub.domain.usuario.DatosAutor;
 import com.gelse.forohub.domain.curso.DatosCurso;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
