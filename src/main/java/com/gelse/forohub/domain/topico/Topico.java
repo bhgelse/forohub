@@ -24,9 +24,10 @@ public class Topico {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String titulo;
 
-    @Lob
+    @Column(length = 1000)
     private String mensaje;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -45,4 +46,14 @@ public class Topico {
 
     @OneToMany(mappedBy = "topico")
     private List<Respuesta> respuestas;
+
+    public Topico(DatosRegistroTopico datos, Usuario autor, Curso curso) {
+        this.id = null;
+        this.titulo = datos.titulo();
+        this.mensaje = datos.mensaje();
+        this.fechaCreacion = LocalDateTime.now();
+        this.status = Status.NO_RESPONDIDO;
+        this.autor = autor;
+        this.curso = curso;
+    }
 }

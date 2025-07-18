@@ -37,4 +37,5 @@ public class Usuario {
 
     @OneToMany(mappedBy = "autor")
     private List<Respuesta> respuestas;
+
 }

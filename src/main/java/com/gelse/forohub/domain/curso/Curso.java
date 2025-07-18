@@ -25,4 +25,5 @@ public class Curso {
 
     @OneToMany(mappedBy = "curso")
     private List<Topico> topicos;
+
 }
