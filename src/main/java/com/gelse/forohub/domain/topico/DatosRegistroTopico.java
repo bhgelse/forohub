@@ -4,9 +4,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record DatosRegistroTopico(
-        @NotBlank String titulo,
-        @NotBlank String mensaje,
-        @NotNull Long idAutor,
-        @NotNull Long idCurso
+        @NotBlank(message = "El Topico debe tener un titulo")
+        String titulo,
+        @NotBlank(message = "El Topico debe tener un mensaje")
+        String mensaje,
+        @NotNull(message = "No existe un Autor para este Topico")
+        Long idAutor,
+        @NotNull(message = "No existe un Curso para este Topico")
+        Long idCurso
 ) {
 }
