@@ -10,11 +10,14 @@ import com.gelse.forohub.domain.usuario.Usuario;
 import com.gelse.forohub.domain.usuario.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/topicos")
@@ -29,6 +32,7 @@ public class TopicoController {
     @Autowired
     private CursoRepository cursoRepository;
 
+    @Transactional
     @PostMapping
     public ResponseEntity<?> registrar(@RequestBody @Valid DatosRegistroTopico datos){
         if(topicoRepository.existsByTituloAndMensaje(datos.titulo(), datos.mensaje())){
@@ -42,5 +46,16 @@ public class TopicoController {
         topicoRepository.save(topico);
 
         return ResponseEntity.ok(new DatosRespuestaTopico(topico));
+    }
+
+    @GetMapping
+    public Page<DatosRespuestaTopico> listar(@PageableDefault(size = 10, sort = {"fechaCreacion"}) Pageable paginacion){
+        return topicoRepository.findAll(paginacion).map(DatosRespuestaTopico::new);
+    }
+
+    @GetMapping("/{id}")
+    public DatosRespuestaTopico detallar(@PathVariable Long id){
+        Topico topico = topicoRepository.getReferenceById(id);
+        return new DatosRespuestaTopico(topico);
     }
 }
