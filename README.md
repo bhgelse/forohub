@@ -1,118 +1,153 @@
+
 # ForoHub 🧠💬
 
-**ForoHub** es una aplicación web de foros de discusión construida con Java y Spring Boot. Permite a los usuarios registrarse, autenticarse y participar activamente creando y comentando temas en distintos cursos.
+**ForoHub** es una aplicación web construida con **Java + Spring Boot** que permite a los usuarios participar en un foro de discusión académico. Puedes crear cuentas, iniciar sesión, publicar tópicos, responder y consultar publicaciones en cursos específicos.
+
+> 🔗 Repositorio del proyecto: [github.com/bhgelse/forohub](https://github.com/bhgelse/forohub)
 
 ---
 
-## 🚀 Tecnologías Utilizadas
+## 🚀 Tecnologías principales
 
-- **Java 17+**
-- **Spring Boot 3+**
-- **Spring Security** (con autenticación JWT)
-- **JPA/Hibernate** (ORM)
-- **MySQL** como base de datos
-- **Flyway** para migraciones automáticas
-- **Lombok** para simplificar el código Java
-- **Maven** como sistema de construcción
-- **Postman** (para pruebas de la API)
-
----
-
-## 🔐 Autenticación
-
-El sistema utiliza **JWT (JSON Web Tokens)** para manejar la autenticación.
-
-### Flujo de login:
-1. El usuario envía correo y contraseña.
-2. El backend genera un token válido por 2 horas.
-3. El usuario debe incluir el token en el header de sus solicitudes:
-
+- **Java 17**
+- **Spring Boot 3**
+- **Spring Security + JWT**
+- **JPA / Hibernate**
+- **MySQL**
+- **Flyway (para migraciones)**
+- **Lombok**
+- **Maven**
 
 ---
 
 ## 📂 Estructura del Proyecto
 
-src/
-├── main/
-│ ├── java/com/gelse/forohub/
-│ │ ├── controller/ --> Controladores REST
-│ │ ├── domain/ --> Entidades del dominio (Usuario, Topico, Curso)
-│ │ ├── infra/security/ --> Seguridad: Filtros, TokenService
-│ │ ├── repository/ --> Repositorios JPA
-│ │ └── ForohubApplication.java
-│ └── resources/
-│ ├── application.properties
-│ └── db/migration/ --> Scripts SQL para Flyway (V1__init.sql, etc.)
+```
+
+forohub/
+├── controller/         # Controladores REST
+├── domain/             # Entidades del modelo (Topico, Usuario, Curso)
+├── infra/security/     # Seguridad JWT y filtros
+├── repository/         # Interfaces JpaRepository
+├── resources/
+│   ├── application.properties
+│   └── db/migration/   # Scripts SQL para Flyway
+└── ForohubApplication.java
+
+```
 
 ---
 
-## 🗃️ Scripts Flyway (Migraciones)
+## 🔐 Autenticación con JWT
 
-Los scripts SQL están ubicados en:
+El backend utiliza JWT para proteger rutas privadas.  
+Para acceder a endpoints protegidos:
 
-src/main/resources/db/migration/
+1. Autentícate con `/login` (envía correo y contraseña)
+2. El backend devuelve un token JWT.
+3. Usa este token en tus peticiones:
 
-Y tienen nombres como:  
+```
 
-V1__init.sql
-V2__add_estado_topico.sql
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR...
 
-
-Al iniciar la aplicación, Flyway ejecutará las migraciones automáticamente si hay cambios.
-
----
-
-## 🛠 Endpoints principales
-
-| Método | Endpoint            | Descripción                     |
-|--------|---------------------|---------------------------------|
-| POST   | `/login`            | Autenticación y obtención token |
-| POST   | `/usuarios`         | Registro de nuevo usuario       |
-| GET    | `/topicos`          | Lista de todos los tópicos      |
-| POST   | `/topicos`          | Crear nuevo tópico              |
-| PUT    | `/topicos/{id}`     | Actualizar tópico               |
-| DELETE | `/topicos/{id}`     | Eliminar tópico                 |
-
-> ⚠️ Los endpoints protegidos requieren el token JWT en el encabezado Authorization.
+````
 
 ---
 
-## 🧪 Cómo correr el proyecto localmente
+## 🔧 Configuración local
 
 1. Clona el repositorio:
+
    ```bash
-   git clone https://github.com/tu-usuario/forohub.git
+   git clone https://github.com/bhgelse/forohub.git
    cd forohub
-Crea una base de datos MySQL:
+````
 
-CREATE DATABASE forohub;
+2. Crea la base de datos en MySQL:
 
-Configura tu archivo application.properties:
+   ```sql
+   CREATE DATABASE forohub;
+   ```
 
-spring.datasource.url=jdbc:mysql://localhost:3306/forohub
-spring.datasource.username=tu_usuario
-spring.datasource.password=tu_contraseña
-api.security.token.secret=clave-secreta-super-segura
-spring.jpa.hibernate.ddl-auto=none
-Corre el proyecto desde tu IDE o terminal:
+3. Configura `application.properties`:
 
-./mvnw spring-boot:run
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/forohub
+   spring.datasource.username=TU_USUARIO
+   spring.datasource.password=TU_CONTRASEÑA
 
-✅ TODOs futuros
- Interfaz web con React o Thymeleaf
+   api.security.token.secret=clave-secreta-segura
+   spring.jpa.hibernate.ddl-auto=none
+   ```
 
- Moderación de tópicos
+4. Ejecuta el proyecto:
 
- Comentarios anidados
-
- Notificaciones por correo
-
-👨‍💻 Autor
-Desarrollado por Gelse con ❤️ y Java.
-
-📝 Licencia
-MIT License. Puedes usar este proyecto libremente para fines educativos o comerciales.
+   ```bash
+   ./mvnw spring-boot:run
+   ```
 
 ---
 
-✅ Si quieres, también puedo ayudarte a integrarlo directamente en tu repositorio o generarlo como archivo para descargar.
+## 📌 Endpoints principales
+
+| Método | Endpoint        | Descripción                    |
+| ------ | --------------- | ------------------------------ |
+| POST   | `/login`        | Iniciar sesión y obtener token |
+| POST   | `/usuarios`     | Crear un nuevo usuario         |
+| GET    | `/topicos`      | Listar todos los tópicos       |
+| POST   | `/topicos`      | Crear un nuevo tópico          |
+| PUT    | `/topicos/{id}` | Editar tópico                  |
+| DELETE | `/topicos/{id}` | Eliminar tópico                |
+
+> ⚠️ Algunos requieren autenticación vía JWT.
+
+---
+
+## 🧪 Migraciones Flyway
+
+Las migraciones SQL están en:
+
+```
+src/main/resources/db/migration/
+```
+
+Ejemplo:
+
+```sql
+V1__init.sql      -- Crea tablas principales
+V2__estado.sql    -- Agrega campo 'estado' a topicos
+```
+
+Se ejecutan automáticamente al iniciar la app.
+
+---
+
+## 💡 TODOs
+
+* [ ] UI web (React, Angular o Thymeleaf)
+* [ ] Comentarios a tópicos
+* [ ] Sistema de notificaciones
+* [ ] Paginación avanzada
+* [ ] Moderación de contenido
+
+---
+
+## 👤 Autor
+
+Desarrollado por [Gelse](https://github.com/bhgelse) con ❤️ desde Colombia.
+Si te fue útil, ¡dale ⭐ al repo!
+
+---
+
+## 📄 Licencia
+
+Este proyecto está licenciado bajo MIT.
+Puedes usarlo, modificarlo y distribuirlo libremente.
+
+```
+
+---
+
+¿Quieres también que te genere automáticamente este archivo y lo agregues a tu proyecto en GitHub con un `git commit`? Puedo guiarte paso a paso.
+```
