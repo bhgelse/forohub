@@ -121,17 +121,6 @@ V2__estado.sql    -- Agrega campo 'estado' a topicos
 
 Se ejecutan automáticamente al iniciar la app.
 
----
-
-## 💡 TODOs
-
-* [ ] UI web (React, Angular o Thymeleaf)
-* [ ] Comentarios a tópicos
-* [ ] Sistema de notificaciones
-* [ ] Paginación avanzada
-* [ ] Moderación de contenido
-
----
 
 ## 👤 Autor
 
