@@ -2,6 +2,7 @@ package com.gelse.forohub.domain.curso;
 
 import com.gelse.forohub.domain.topico.Topico;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.*;
 
 import java.util.List;
@@ -24,4 +25,8 @@ public class Curso {
     @OneToMany(mappedBy = "curso")
     private List<Topico> topicos;
 
+    public void actualizarInformaciones(@Valid DatosActualizarCurso datos) {
+            this.nombre = datos.nombre();
+            this.categoria = datos.categoria();
+    }
 }

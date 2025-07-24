@@ -6,6 +6,7 @@ import com.gelse.forohub.domain.usuario.Usuario;
 import com.gelse.forohub.domain.curso.Curso;
 import com.gelse.forohub.domain.respuesta.Respuesta;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class Topico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private boolean activo;
     private String titulo;
 
     @Column(length = 1000)
@@ -47,11 +49,26 @@ public class Topico {
 
     public Topico(DatosRegistroTopico datos, Usuario autor, Curso curso) {
         this.id = null;
+        this.activo = true;
         this.titulo = datos.titulo();
         this.mensaje = datos.mensaje();
         this.fechaCreacion = LocalDateTime.now();
         this.status = Status.NO_RESPONDIDO;
         this.autor = autor;
         this.curso = curso;
+    }
+
+    public void actualizarInformaciones(@Valid DatosActualizarTopico datos) {
+        this.titulo = datos.titulo();
+        this.mensaje= datos.mensaje();
+        this.curso.actualizarInformaciones(datos.curso());
+        this.status = Status.ACTUALIZADO;
+        this.fechaCreacion = LocalDateTime.now();
+
+    }
+
+    public void eliminar() {
+        this.activo = false;
+        this.status = Status.CERRADO;
     }
 }

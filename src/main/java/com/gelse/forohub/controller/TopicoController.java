@@ -13,9 +13,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -33,57 +32,55 @@ public class TopicoController {
 
     @Transactional
     @PostMapping
-    public ResponseEntity<?> registrar(@RequestBody @Valid DatosRegistroTopico datos){
-        if(topicoRepository.existsByTituloAndMensaje(datos.titulo(), datos.mensaje())){
-            return ResponseEntity.badRequest().body("Ya existe un topico con el mismo Titulo y Mensaje");
-        }
+    public ResponseEntity<DatosRespuestaTopico> registrar(@RequestBody @Valid DatosRegistroTopico datos, UriComponentsBuilder uriComponentsBuilder) {
 
-        Usuario autor = usuarioRepository.findById(datos.idAutor())
-                .orElseThrow(() -> new RuntimeException("Autor no encontrado"));
-        Curso curso = cursoRepository.findById(datos.idCurso())
-                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+        Usuario autor = usuarioRepository.getReferenceById(datos.idAutor());
+        Curso curso = cursoRepository.getReferenceById(datos.idCurso());
 
         Topico topico = new Topico(datos, autor, curso);
         topicoRepository.save(topico);
 
-        return ResponseEntity.ok(new DatosRespuestaTopico(topico));
+        var uri = uriComponentsBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(new DatosRespuestaTopico(topico));
     }
 
     @GetMapping
-    public Page<DatosRespuestaTopico> listar(@PageableDefault(size = 10, sort = {"fechaCreacion"}) Pageable paginacion){
-        return topicoRepository.findAll(paginacion).map(DatosRespuestaTopico::new);
+    public ResponseEntity<Page<DatosRespuestaTopico>> listar(@PageableDefault(size = 10, sort = {"fechaCreacion"}) Pageable paginacion) {
+        var page = topicoRepository.findAllByActivoTrue(paginacion).map(DatosRespuestaTopico::new);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> detallar(@PathVariable Long id){
-        Topico topico = topicoRepository.getReferenceById(id);
+    public ResponseEntity<DatosRespuestaTopico> detallar(@PathVariable Long id) {
+       Topico topico = topicoRepository.getReferenceById(id);
         return ResponseEntity.ok(new DatosRespuestaTopico(topico));
     }
 
     @Transactional
     @PutMapping("/{id}")
-    public ResponseEntity<?> Actualizar(@PathVariable Long id, @RequestBody @Valid DatosActualizarTopico datos){
-        Optional<Topico> topicoOptional = topicoRepository.findById(id);
+    public ResponseEntity Actualizar(@PathVariable Long id, @RequestBody @Valid DatosActualizarTopico datos) {
+        Topico topico = topicoRepository.getReferenceById(id);
 
-        if(topicoOptional.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        Topico topico = topicoOptional.get();
-
-        boolean duplicado = topicoRepository.existsByTituloAndMensaje(datos.titulo(), datos.mensaje()) &&
-                topico.getTitulo().equals(datos.titulo()) || topico.getMensaje().equals(datos.mensaje());
-
-        if(duplicado){
-            return ResponseEntity.badRequest().body("Ya existe un topico con el mismo titulo y mensaje");
-        }
-
-        topico.setTitulo(datos.titulo());
-        topico.setMensaje(datos.mensaje());
-        topico.getCurso().setNombre(datos.curso());
-        topico.setStatus(Status.ACTUALIZADO);
-        topico.setFechaCreacion(LocalDateTime.now());
-
-        topicoRepository.save(topico);
+        topico.actualizarInformaciones(datos);
         return ResponseEntity.ok(new DatosRespuestaTopico(topico));
+    }
+
+    @Transactional
+    @DeleteMapping("/{id}/cerrar")
+    public ResponseEntity cerrar(@PathVariable Long id) {
+        Topico topico = topicoRepository.getReferenceById(id);
+
+        topico.eliminar();
+        return ResponseEntity.noContent().build();
+    }
+
+    @Transactional
+    @DeleteMapping("/{id}")
+    public ResponseEntity eliminar(@PathVariable Long id) {
+        Topico topico = topicoRepository.getReferenceById(id);
+        topicoRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+
     }
 }
