@@ -59,10 +59,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR...
 
 1. Clona el repositorio:
 
-   ```bash
+   ```
    git clone https://github.com/bhgelse/forohub.git
    cd forohub
-````
+```
 
 2. Crea la base de datos en MySQL:
 
